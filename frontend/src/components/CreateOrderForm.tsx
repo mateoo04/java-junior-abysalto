@@ -184,26 +184,7 @@ export function CreateOrderForm({ onCreated }: CreateOrderFormProps) {
               className={inputClass}
             />
           </label>
-          <label className="block">
-            <span className="text-xs text-slate-500">Payment</span>
-            <select
-              value={form.paymentOption}
-              onChange={(e) =>
-                setForm((f) => ({
-                  ...f,
-                  paymentOption: e.target.value as PaymentOption,
-                }))
-              }
-              className={inputClass}
-            >
-              {PAYMENT_OPTIONS.map((opt) => (
-                <option key={opt} value={opt}>
-                  {paymentOptionLabel(opt)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="block">
+          <label className="block sm:col-span-2">
             <span className="text-xs text-slate-500">Contact number</span>
             <input
               type="tel"
@@ -213,16 +194,37 @@ export function CreateOrderForm({ onCreated }: CreateOrderFormProps) {
               className={inputClass}
             />
           </label>
-          <label className="block">
-            <span className="text-xs text-slate-500">Currency</span>
-            <input
-              type="text"
-              required
-              value={form.currency}
-              onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value }))}
-              className={inputClass}
-            />
-          </label>
+          <div className="flex flex-col gap-4 sm:col-span-2 sm:flex-row">
+            <label className="block min-w-0 flex-1">
+              <span className="text-xs text-slate-500">Payment</span>
+              <select
+                value={form.paymentOption}
+                onChange={(e) =>
+                  setForm((f) => ({
+                    ...f,
+                    paymentOption: e.target.value as PaymentOption,
+                  }))
+                }
+                className={inputClass}
+              >
+                {PAYMENT_OPTIONS.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {paymentOptionLabel(opt)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block min-w-0 flex-1 sm:max-w-[10rem]">
+              <span className="text-xs text-slate-500">Currency</span>
+              <input
+                type="text"
+                required
+                value={form.currency}
+                onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value }))}
+                className={inputClass}
+              />
+            </label>
+          </div>
           <label className="block sm:col-span-2">
             <span className="text-xs text-slate-500">Note (optional)</span>
             <textarea
