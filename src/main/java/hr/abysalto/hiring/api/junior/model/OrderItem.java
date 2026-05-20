@@ -8,11 +8,11 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Data
-@Table("order_item")
+@Table("ORDER_ITEM")
 public class OrderItem {
 	@Id
 	private Long orderItemId;
-	@Column("order_nr")
+	@Column("ORDER_NR")
 	private Long orderId;
 	private Short itemNr;
 	private String name;

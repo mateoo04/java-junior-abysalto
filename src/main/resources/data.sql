@@ -8,7 +8,7 @@ INSERT INTO buyer_address (city, street, home_number) VALUES ('Zagreb', 'Ilica',
 INSERT INTO buyer_address (city, street, home_number) VALUES ('Zagreb', 'Slavonska avenija', '56');
 INSERT INTO buyer_address (city, street, home_number) VALUES ('Zagreb', 'Prisavlje', '8');
 
-INSERT INTO "order" (
+INSERT INTO orders (
 	buyer_id,
 	order_status,
 	order_time,
@@ -30,7 +30,7 @@ INSERT INTO "order" (
 	15.20
 );
 
-INSERT INTO "order" (
+INSERT INTO orders (
 	buyer_id,
 	order_status,
 	order_time,

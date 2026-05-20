@@ -12,15 +12,15 @@ import java.util.Optional;
 @Repository
 public interface OrderRepository extends CrudRepository<Order, Long> {
 
-	@Query("SELECT * FROM \"order\" ORDER BY order_time DESC")
+	@Query("SELECT * FROM orders ORDER BY order_time DESC")
 	List<Order> findAllOrders();
 
-	@Query("SELECT * FROM \"order\" ORDER BY total_price ASC")
+	@Query("SELECT * FROM orders ORDER BY total_price ASC")
 	List<Order> findAllOrdersByTotalPriceAsc();
 
-	@Query("SELECT * FROM \"order\" ORDER BY total_price DESC")
+	@Query("SELECT * FROM orders ORDER BY total_price DESC")
 	List<Order> findAllOrdersByTotalPriceDesc();
 
-	@Query("SELECT * FROM \"order\" WHERE order_nr = :orderNr")
+	@Query("SELECT * FROM orders WHERE order_nr = :orderNr")
 	Optional<Order> findOrderByOrderNr(@Param("orderNr") Long orderNr);
 }
