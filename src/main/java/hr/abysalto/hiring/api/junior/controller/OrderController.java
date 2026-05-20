@@ -2,10 +2,12 @@ package hr.abysalto.hiring.api.junior.controller;
 
 import hr.abysalto.hiring.api.junior.dto.CreateOrderRequest;
 import hr.abysalto.hiring.api.junior.dto.OrderResponse;
+import hr.abysalto.hiring.api.junior.dto.UpdateOrderStatusRequest;
 import hr.abysalto.hiring.api.junior.manager.OrderManager;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,5 +42,10 @@ public class OrderController {
 	@GetMapping("/{orderNr}")
 	public OrderResponse getByOrderNr(@PathVariable Long orderNr) {
 		return this.orderManager.getByOrderNr(orderNr);
+	}
+
+	@PatchMapping("/{orderNr}/status")
+	public OrderResponse updateStatus(@PathVariable Long orderNr, @RequestBody UpdateOrderStatusRequest request) {
+		return this.orderManager.updateStatus(orderNr, request);
 	}
 }

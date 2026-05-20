@@ -7,6 +7,7 @@ import hr.abysalto.hiring.api.junior.dto.CreateOrderItemRequest;
 import hr.abysalto.hiring.api.junior.dto.CreateOrderRequest;
 import hr.abysalto.hiring.api.junior.dto.OrderItemResponse;
 import hr.abysalto.hiring.api.junior.dto.OrderResponse;
+import hr.abysalto.hiring.api.junior.dto.UpdateOrderStatusRequest;
 import hr.abysalto.hiring.api.junior.model.Buyer;
 import hr.abysalto.hiring.api.junior.model.BuyerAddress;
 import hr.abysalto.hiring.api.junior.model.Order;
@@ -77,6 +78,21 @@ public class OrderManagerImpl implements OrderManager {
 		Order savedOrder = this.orderRepository.save(order);
 		saveItems(savedOrder.getOrderNr(), request.items());
 
+		return getByOrderNr(savedOrder.getOrderNr());
+	}
+
+	@Override
+	@Transactional
+	public OrderResponse updateStatus(Long orderNr, UpdateOrderStatusRequest request) {
+		if (request == null || request.orderStatus() == null) {
+			throw badRequest("Order status is required");
+		}
+
+		Order order = this.orderRepository.findOrderByOrderNr(orderNr)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+		order.setOrderStatus(request.orderStatus());
+
+		Order savedOrder = this.orderRepository.save(order);
 		return getByOrderNr(savedOrder.getOrderNr());
 	}
 
