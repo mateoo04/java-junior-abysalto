@@ -8,6 +8,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/orders': 'http://localhost:8080',
+      '/buyers': 'http://localhost:8080',
     },
   },
 })

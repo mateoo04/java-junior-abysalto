@@ -1,10 +1,10 @@
 package hr.abysalto.hiring.api.junior.manager;
 
-import hr.abysalto.hiring.api.junior.model.Buyer;
+import hr.abysalto.hiring.api.junior.dto.BuyerResponse;
+
+import java.util.List;
 
 public interface BuyerManager {
-	Iterable<Buyer> getAllBuyers();
-	void save(Buyer buyer);
-	Buyer getById(Long id);
-	void deleteById(Long id);
+
+	List<BuyerResponse> search(String firstName, String lastName);
 }

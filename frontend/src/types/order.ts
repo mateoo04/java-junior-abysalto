@@ -35,6 +35,13 @@ export interface OrderResponse {
   totalPrice: number
 }
 
+export interface BuyerResponse {
+  buyerId: number
+  firstName: string
+  lastName: string
+  title: string | null
+}
+
 export interface CreateBuyerRequest {
   firstName: string
   lastName: string
@@ -54,6 +61,7 @@ export interface CreateOrderItemRequest {
 }
 
 export interface CreateOrderRequest {
+  buyerId?: number
   buyer: CreateBuyerRequest
   paymentOption: PaymentOption
   deliveryAddress: CreateAddressRequest

@@ -1,8 +1,10 @@
 import { useState, type FormEvent } from 'react'
 import { ApiError } from '../api/client'
 import { createOrder } from '../api/orders'
+import { useBuyerSearch } from '../hooks/useBuyerSearch'
 import { PAYMENT_OPTIONS, paymentOptionLabel } from '../lib/labels'
-import type { CreateOrderRequest, PaymentOption } from '../types/order'
+import type { BuyerResponse, CreateOrderRequest, PaymentOption } from '../types/order'
+import { BuyerSearchSuggestions } from './BuyerSearchSuggestions'
 import { ErrorBanner } from './ErrorBanner'
 import { OrderItemFields } from './OrderItemFields'
 
@@ -19,14 +21,75 @@ const initialForm = (): CreateOrderRequest => ({
   items: [{ name: '', quantity: 1, price: 0 }],
 })
 
+type BuyerSnapshot = {
+  firstName: string
+  lastName: string
+  title: string
+}
+
+function buyerSnapshot(buyer: CreateOrderRequest['buyer']): BuyerSnapshot {
+  return {
+    firstName: buyer.firstName,
+    lastName: buyer.lastName,
+    title: buyer.title ?? '',
+  }
+}
+
+function snapshotsMatch(a: BuyerSnapshot, b: BuyerSnapshot): boolean {
+  return a.firstName === b.firstName && a.lastName === b.lastName && a.title === b.title
+}
+
 type CreateOrderFormProps = {
   onCreated: () => void
 }
 
 export function CreateOrderForm({ onCreated }: CreateOrderFormProps) {
   const [form, setForm] = useState<CreateOrderRequest>(initialForm)
+  const [selectedBuyerId, setSelectedBuyerId] = useState<number | null>(null)
+  const [selectedSnapshot, setSelectedSnapshot] = useState<BuyerSnapshot | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const { suggestions, loading, error: searchError, hasSearched } = useBuyerSearch(
+    form.buyer.firstName,
+    form.buyer.lastName,
+  )
+
+  function updateBuyer(patch: Partial<CreateOrderRequest['buyer']>) {
+    const nextBuyer = { ...form.buyer, ...patch }
+    if (selectedBuyerId != null && selectedSnapshot != null) {
+      const next = buyerSnapshot(nextBuyer)
+      if (!snapshotsMatch(next, selectedSnapshot)) {
+        setSelectedBuyerId(null)
+        setSelectedSnapshot(null)
+      }
+    }
+    setForm((f) => ({ ...f, buyer: nextBuyer }))
+  }
+
+  function handleSelectBuyer(buyer: BuyerResponse) {
+    const snapshot: BuyerSnapshot = {
+      firstName: buyer.firstName,
+      lastName: buyer.lastName,
+      title: buyer.title ?? '',
+    }
+    setSelectedBuyerId(buyer.buyerId)
+    setSelectedSnapshot(snapshot)
+    setForm((f) => ({
+      ...f,
+      buyer: {
+        firstName: buyer.firstName,
+        lastName: buyer.lastName,
+        ...(buyer.title ? { title: buyer.title } : {}),
+      },
+    }))
+  }
+
+  function resetForm() {
+    setForm(initialForm())
+    setSelectedBuyerId(null)
+    setSelectedSnapshot(null)
+  }
 
   function validate(): string | null {
     if (!form.buyer.firstName.trim() || !form.buyer.lastName.trim()) {
@@ -59,6 +122,7 @@ export function CreateOrderForm({ onCreated }: CreateOrderFormProps) {
 
     const payload: CreateOrderRequest = {
       ...form,
+      ...(selectedBuyerId != null ? { buyerId: selectedBuyerId } : {}),
       buyer: {
         firstName: form.buyer.firstName.trim(),
         lastName: form.buyer.lastName.trim(),
@@ -83,7 +147,7 @@ export function CreateOrderForm({ onCreated }: CreateOrderFormProps) {
 
     try {
       await createOrder(payload)
-      setForm(initialForm())
+      resetForm()
       onCreated()
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Failed to create order')
@@ -97,7 +161,12 @@ export function CreateOrderForm({ onCreated }: CreateOrderFormProps) {
       {error && <ErrorBanner message={error} onDismiss={() => setError(null)} />}
 
       <section className="space-y-4">
-        <h2 className="text-lg font-medium text-white">Buyer</h2>
+        <div className="flex flex-wrap items-baseline gap-2">
+          <h2 className="text-lg font-medium text-white">Buyer</h2>
+          {selectedBuyerId != null && (
+            <span className="text-sm text-emerald-400">Using existing customer</span>
+          )}
+        </div>
         <div className="grid gap-4 sm:grid-cols-3">
           <label className="block">
             <span className="text-xs text-slate-500">First name</span>
@@ -105,10 +174,9 @@ export function CreateOrderForm({ onCreated }: CreateOrderFormProps) {
               type="text"
               required
               value={form.buyer.firstName}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, buyer: { ...f.buyer, firstName: e.target.value } }))
-              }
+              onChange={(e) => updateBuyer({ firstName: e.target.value })}
               className={inputClass}
+              autoComplete="off"
             />
           </label>
           <label className="block">
@@ -117,10 +185,9 @@ export function CreateOrderForm({ onCreated }: CreateOrderFormProps) {
               type="text"
               required
               value={form.buyer.lastName}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, buyer: { ...f.buyer, lastName: e.target.value } }))
-              }
+              onChange={(e) => updateBuyer({ lastName: e.target.value })}
               className={inputClass}
+              autoComplete="off"
             />
           </label>
           <label className="block">
@@ -128,13 +195,22 @@ export function CreateOrderForm({ onCreated }: CreateOrderFormProps) {
             <input
               type="text"
               value={form.buyer.title ?? ''}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, buyer: { ...f.buyer, title: e.target.value } }))
-              }
+              onChange={(e) => updateBuyer({ title: e.target.value })}
               className={inputClass}
             />
           </label>
         </div>
+        {searchError && (
+          <p className="text-sm text-red-400" role="alert">
+            {searchError}
+          </p>
+        )}
+        <BuyerSearchSuggestions
+          suggestions={suggestions}
+          loading={loading}
+          hasSearched={hasSearched}
+          onSelect={handleSelectBuyer}
+        />
       </section>
 
       <section className="space-y-4">

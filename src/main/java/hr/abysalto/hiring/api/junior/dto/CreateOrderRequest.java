@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public record CreateOrderRequest(
+		Long buyerId,
 		@NotNull
 		@Valid
 		CreateBuyerRequest buyer,

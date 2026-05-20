@@ -58,7 +58,7 @@ public class OrderManagerImpl implements OrderManager {
 	@Override
 	@Transactional
 	public OrderResponse create(CreateOrderRequest request) {
-		Buyer buyer = saveBuyer(request.buyer());
+		Buyer buyer = resolveBuyer(request);
 		BuyerAddress deliveryAddress = saveAddress(request.deliveryAddress());
 		BigDecimal totalPrice = calculateTotalPrice(request.items());
 
@@ -98,6 +98,14 @@ public class OrderManagerImpl implements OrderManager {
 			return this.orderRepository.findAllOrdersByTotalPriceDesc();
 		}
 		return this.orderRepository.findAllOrders();
+	}
+
+	private Buyer resolveBuyer(CreateOrderRequest request) {
+		if (request.buyerId() != null) {
+			return this.buyerRepository.findById(request.buyerId())
+					.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Buyer not found"));
+		}
+		return saveBuyer(request.buyer());
 	}
 
 	private Buyer saveBuyer(CreateBuyerRequest request) {

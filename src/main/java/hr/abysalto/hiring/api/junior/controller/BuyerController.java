@@ -1,73 +1,30 @@
 package hr.abysalto.hiring.api.junior.controller;
 
+import hr.abysalto.hiring.api.junior.dto.BuyerResponse;
 import hr.abysalto.hiring.api.junior.manager.BuyerManager;
-import hr.abysalto.hiring.api.junior.model.Buyer;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "Buyers", description = "for handling buyers")
-@RequestMapping("buyer")
-@Controller
+import java.util.List;
+
+@Tag(name = "Buyers", description = "for searching existing buyers")
+@RestController
+@RequestMapping("buyers")
 public class BuyerController {
 
-	@Autowired
-	private BuyerManager buyerManager;
+	private final BuyerManager buyerManager;
 
-	@Operation(summary = "Get all buyers", responses = {
-			@ApiResponse(description = "Success", responseCode = "200", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Buyer.class)))),
-			@ApiResponse(description = "Error", responseCode = "500", content = @Content(mediaType = "application/json")) })
-	@GetMapping("/list")
-	public ResponseEntity list() {
-		try {
-			return ResponseEntity.ok(this.buyerManager.getAllBuyers());
-		} catch (Exception ex) {
-			return ResponseEntity.internalServerError().body(ex);
-		}
+	public BuyerController(BuyerManager buyerManager) {
+		this.buyerManager = buyerManager;
 	}
 
-	@GetMapping("/")
-	public String viewHomePage(Model model) {
-		model.addAttribute("buyerList", this.buyerManager.getAllBuyers());
-		return "buyer/index";
+	@GetMapping("/search")
+	public List<BuyerResponse> search(
+			@RequestParam(required = false) String firstName,
+			@RequestParam(required = false) String lastName) {
+		return this.buyerManager.search(firstName, lastName);
 	}
-
-	@GetMapping("/addnew")
-	public String addNewEmployee(Model model) {
-		Buyer buyer = new Buyer();
-		model.addAttribute("buyer", buyer);
-		return "buyer/newbuyer";
-	}
-
-	@PostMapping("/save")
-	public String sabeBuyer(@ModelAttribute("buyer") Buyer buyer) {
-		this.buyerManager.save(buyer);
-		return "redirect:/buyer/";
-	}
-
-	@GetMapping("/showFormForUpdate/{id}")
-	public String updateForm(@PathVariable(value = "id") long id, Model model) {
-		Buyer buyer = this.buyerManager.getById(id);
-		model.addAttribute("buyer", buyer);
-		return "buyer/updatebuyer";
-	}
-
-	@GetMapping("/deleteBuyer/{id}")
-	public String deleteById(@PathVariable(value = "id") long id) {
-		this.buyerManager.deleteById(id);
-		return "redirect:/buyer/";
-	}
-
 }
