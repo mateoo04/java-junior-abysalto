@@ -22,7 +22,6 @@ target/
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
-/dist/
 /nbdist/
 /.nb-gradle/
 build/
@@ -31,3 +30,17 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Frontend (Vite / npm) ###
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.env*.local
+
+### OS / logs ###
+.DS_Store
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
