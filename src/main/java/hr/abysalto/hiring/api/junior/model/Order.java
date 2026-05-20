@@ -45,6 +45,7 @@ public class Order {
 	private Long deliveryAddressId;
 	//	private BuyerAddress deliveryAddress;
 	private String contactNumber;
+	private String note;
 	private String currency;
 	private BigDecimal totalPrice;
 }
