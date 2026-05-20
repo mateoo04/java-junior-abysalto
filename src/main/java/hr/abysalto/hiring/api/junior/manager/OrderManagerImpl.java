@@ -58,8 +58,6 @@ public class OrderManagerImpl implements OrderManager {
 	@Override
 	@Transactional
 	public OrderResponse create(CreateOrderRequest request) {
-		validate(request);
-
 		Buyer buyer = saveBuyer(request.buyer());
 		BuyerAddress deliveryAddress = saveAddress(request.deliveryAddress());
 		BigDecimal totalPrice = calculateTotalPrice(request.items());
@@ -84,10 +82,6 @@ public class OrderManagerImpl implements OrderManager {
 	@Override
 	@Transactional
 	public OrderResponse updateStatus(Long orderNr, UpdateOrderStatusRequest request) {
-		if (request == null || request.orderStatus() == null) {
-			throw badRequest("Order status is required");
-		}
-
 		Order order = this.orderRepository.findOrderByOrderNr(orderNr)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
 		order.setOrderStatus(request.orderStatus());
@@ -104,68 +98,6 @@ public class OrderManagerImpl implements OrderManager {
 			return this.orderRepository.findAllOrdersByTotalPriceDesc();
 		}
 		return this.orderRepository.findAllOrders();
-	}
-
-	private void validate(CreateOrderRequest request) {
-		if (request == null) {
-			throw badRequest("Order request is required");
-		}
-		validateBuyer(request.buyer());
-		validateAddress(request.deliveryAddress());
-		if (request.paymentOption() == null) {
-			throw badRequest("Payment option is required");
-		}
-		if (isBlank(request.contactNumber())) {
-			throw badRequest("Contact number is required");
-		}
-		if (isBlank(request.currency())) {
-			throw badRequest("Currency is required");
-		}
-		if (request.items() == null || request.items().isEmpty()) {
-			throw badRequest("At least one order item is required");
-		}
-		for (CreateOrderItemRequest item : request.items()) {
-			validateItem(item);
-		}
-	}
-
-	private void validateBuyer(CreateBuyerRequest buyer) {
-		if (buyer == null) {
-			throw badRequest("Buyer is required");
-		}
-		if (isBlank(buyer.firstName())) {
-			throw badRequest("Buyer first name is required");
-		}
-		if (isBlank(buyer.lastName())) {
-			throw badRequest("Buyer last name is required");
-		}
-	}
-
-	private void validateAddress(CreateAddressRequest address) {
-		if (address == null) {
-			throw badRequest("Delivery address is required");
-		}
-		if (isBlank(address.city())) {
-			throw badRequest("Delivery city is required");
-		}
-		if (isBlank(address.street())) {
-			throw badRequest("Delivery street is required");
-		}
-	}
-
-	private void validateItem(CreateOrderItemRequest item) {
-		if (item == null) {
-			throw badRequest("Order item is required");
-		}
-		if (isBlank(item.name())) {
-			throw badRequest("Order item name is required");
-		}
-		if (item.quantity() == null || item.quantity() <= 0) {
-			throw badRequest("Order item quantity must be greater than zero");
-		}
-		if (item.price() == null || item.price().compareTo(BigDecimal.ZERO) <= 0) {
-			throw badRequest("Order item price must be greater than zero");
-		}
 	}
 
 	private Buyer saveBuyer(CreateBuyerRequest request) {
@@ -253,13 +185,5 @@ public class OrderManagerImpl implements OrderManager {
 
 	private String normalizeCurrency(String currency) {
 		return currency.trim().toUpperCase();
-	}
-
-	private boolean isBlank(String value) {
-		return value == null || value.isBlank();
-	}
-
-	private ResponseStatusException badRequest(String reason) {
-		return new ResponseStatusException(HttpStatus.BAD_REQUEST, reason);
 	}
 }

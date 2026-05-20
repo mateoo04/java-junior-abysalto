@@ -6,7 +6,7 @@ public enum OrderStatus {
 	DONE;
 
 	public static OrderStatus fromString(String orderStatusString) {
-		for(OrderStatus o : values()) {
+		for (OrderStatus o : values()) {
 			if (o.toString().equalsIgnoreCase(orderStatusString)) {
 				return o;
 			}

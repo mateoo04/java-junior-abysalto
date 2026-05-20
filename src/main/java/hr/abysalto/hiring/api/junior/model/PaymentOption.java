@@ -6,7 +6,7 @@ public enum PaymentOption {
 	CARD_ON_DELIVERY;
 
 	public static PaymentOption fromString(String paymentOptionString) {
-		for(PaymentOption o : values()) {
+		for (PaymentOption o : values()) {
 			if (o.toString().equalsIgnoreCase(paymentOptionString)) {
 				return o;
 			}

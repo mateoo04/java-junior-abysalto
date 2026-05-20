@@ -5,6 +5,7 @@ import hr.abysalto.hiring.api.junior.dto.OrderResponse;
 import hr.abysalto.hiring.api.junior.dto.UpdateOrderStatusRequest;
 import hr.abysalto.hiring.api.junior.manager.OrderManager;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -35,7 +36,7 @@ public class OrderController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public OrderResponse create(@RequestBody CreateOrderRequest request) {
+	public OrderResponse create(@Valid @RequestBody CreateOrderRequest request) {
 		return this.orderManager.create(request);
 	}
 
@@ -45,7 +46,7 @@ public class OrderController {
 	}
 
 	@PatchMapping("/{orderNr}/status")
-	public OrderResponse updateStatus(@PathVariable Long orderNr, @RequestBody UpdateOrderStatusRequest request) {
+	public OrderResponse updateStatus(@PathVariable Long orderNr, @Valid @RequestBody UpdateOrderStatusRequest request) {
 		return this.orderManager.updateStatus(orderNr, request);
 	}
 }
