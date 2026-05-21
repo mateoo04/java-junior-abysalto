@@ -112,7 +112,10 @@ class OrderControllerTests {
 									"items": []
 								}
 								"""))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status").value(400))
+				.andExpect(jsonPath("$.message").value("items: must not be empty"))
+				.andExpect(jsonPath("$.path").value("/orders"));
 	}
 
 	@Test
@@ -143,7 +146,10 @@ class OrderControllerTests {
 									]
 								}
 								"""))
-				.andExpect(status().isNotFound());
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.status").value(404))
+				.andExpect(jsonPath("$.message").value("Menu item not found"))
+				.andExpect(jsonPath("$.path").value("/orders"));
 	}
 
 	private static String basicAuthHeader() {

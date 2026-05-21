@@ -1,23 +1,24 @@
-import { useState } from 'react'
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
 import { CreateOrderForm } from './components/CreateOrderForm'
-import { Layout, type AppView } from './components/Layout'
+import { Layout } from './components/Layout'
 import { MealsPage } from './components/MealsPage'
 import { OrderList } from './components/OrderList'
 
 function App() {
-  const [view, setView] = useState<AppView>('list')
-  const [listKey, setListKey] = useState(0)
-
-  function handleCreated() {
-    setListKey((k) => k + 1)
-    setView('list')
-  }
+  const navigate = useNavigate()
 
   return (
-    <Layout view={view} onViewChange={setView}>
-      {view === 'list' && <OrderList key={listKey} />}
-      {view === 'create' && <CreateOrderForm onCreated={handleCreated} />}
-      {view === 'meals' && <MealsPage />}
+    <Layout>
+      <Routes>
+        <Route path="/" element={<Navigate to="/orders" replace />} />
+        <Route path="/orders" element={<OrderList />} />
+        <Route
+          path="/orders/new"
+          element={<CreateOrderForm onCreated={() => navigate('/orders')} />}
+        />
+        <Route path="/menu" element={<MealsPage />} />
+        <Route path="*" element={<Navigate to="/orders" replace />} />
+      </Routes>
     </Layout>
   )
 }

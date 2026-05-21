@@ -28,6 +28,8 @@ The menu screen allows active meals to be listed and new meals to be added.
 - Search existing buyers while creating an order
 - Prefill contact, delivery, payment, and currency from a buyer's latest order
 - Manage menu items
+- Route-based React navigation for orders, new orders, and menu management
+- Consistent JSON error responses for validation and API failures
 - Swagger UI for API exploration
 - Backend integration tests and GitHub Actions CI
 
@@ -136,6 +138,8 @@ Example:
 ```bash
 curl -u user:password http://localhost:8080/orders
 ```
+
+API errors use a consistent JSON shape with `status`, `error`, `message`, `path`, and `timestamp` fields.
 
 ## Tests
 
