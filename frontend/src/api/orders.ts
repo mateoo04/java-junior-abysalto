@@ -17,15 +17,15 @@ function sortParam(sort: OrderSort): string | undefined {
 export function listOrders(sort: OrderSort = 'default'): Promise<OrderResponse[]> {
   const param = sortParam(sort)
   const query = param ? `?sort=${encodeURIComponent(param)}` : ''
-  return request<OrderResponse[]>(`/orders${query}`)
+  return request<OrderResponse[]>(`/api/orders${query}`)
 }
 
 export function getOrder(orderNr: number): Promise<OrderResponse> {
-  return request<OrderResponse>(`/orders/${orderNr}`)
+  return request<OrderResponse>(`/api/orders/${orderNr}`)
 }
 
 export function createOrder(body: CreateOrderRequest): Promise<OrderResponse> {
-  return request<OrderResponse>('/orders', { method: 'POST', body })
+  return request<OrderResponse>('/api/orders', { method: 'POST', body })
 }
 
 export function updateOrderStatus(
@@ -33,5 +33,5 @@ export function updateOrderStatus(
   orderStatus: OrderStatus,
 ): Promise<OrderResponse> {
   const body: UpdateOrderStatusRequest = { orderStatus }
-  return request<OrderResponse>(`/orders/${orderNr}/status`, { method: 'PATCH', body })
+  return request<OrderResponse>(`/api/orders/${orderNr}/status`, { method: 'PATCH', body })
 }

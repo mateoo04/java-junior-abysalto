@@ -28,7 +28,7 @@ class OrderControllerTests {
 
 	@Test
 	void createOrderCalculatesTotalPrice() throws Exception {
-		this.mockMvc.perform(post("/orders")
+		this.mockMvc.perform(post("/api/orders")
 						.header(HttpHeaders.AUTHORIZATION, AUTH_HEADER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("""
@@ -67,7 +67,7 @@ class OrderControllerTests {
 
 	@Test
 	void updateOrderStatus() throws Exception {
-		this.mockMvc.perform(patch("/orders/1/status")
+		this.mockMvc.perform(patch("/api/orders/1/status")
 						.header(HttpHeaders.AUTHORIZATION, AUTH_HEADER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("""
@@ -81,7 +81,7 @@ class OrderControllerTests {
 
 	@Test
 	void listOrdersSortedByTotalPrice() throws Exception {
-		this.mockMvc.perform(get("/orders")
+		this.mockMvc.perform(get("/api/orders")
 						.param("sort", "totalPrice")
 						.header(HttpHeaders.AUTHORIZATION, AUTH_HEADER))
 				.andExpect(status().isOk())
@@ -91,7 +91,7 @@ class OrderControllerTests {
 
 	@Test
 	void createOrderRejectsEmptyItems() throws Exception {
-		this.mockMvc.perform(post("/orders")
+		this.mockMvc.perform(post("/api/orders")
 						.header(HttpHeaders.AUTHORIZATION, AUTH_HEADER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("""
@@ -115,12 +115,12 @@ class OrderControllerTests {
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.status").value(400))
 				.andExpect(jsonPath("$.message").value("items: must not be empty"))
-				.andExpect(jsonPath("$.path").value("/orders"));
+				.andExpect(jsonPath("$.path").value("/api/orders"));
 	}
 
 	@Test
 	void createOrderRejectsMissingMenuItem() throws Exception {
-		this.mockMvc.perform(post("/orders")
+		this.mockMvc.perform(post("/api/orders")
 						.header(HttpHeaders.AUTHORIZATION, AUTH_HEADER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("""
@@ -149,7 +149,7 @@ class OrderControllerTests {
 				.andExpect(status().isNotFound())
 				.andExpect(jsonPath("$.status").value(404))
 				.andExpect(jsonPath("$.message").value("Menu item not found"))
-				.andExpect(jsonPath("$.path").value("/orders"));
+				.andExpect(jsonPath("$.path").value("/api/orders"));
 	}
 
 	private static String basicAuthHeader() {

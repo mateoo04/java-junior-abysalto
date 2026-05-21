@@ -25,7 +25,7 @@ class BuyerControllerTests {
 
 	@Test
 	void getOrderDefaultsReturnsLatestBuyerOrderDetails() throws Exception {
-		this.mockMvc.perform(get("/buyers/1/order-defaults")
+		this.mockMvc.perform(get("/api/buyers/1/order-defaults")
 						.header(HttpHeaders.AUTHORIZATION, AUTH_HEADER))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.contactNumber").value("+385911111111"))
@@ -38,7 +38,7 @@ class BuyerControllerTests {
 
 	@Test
 	void getOrderDefaultsReturnsNoContentWhenBuyerHasNoOrders() throws Exception {
-		this.mockMvc.perform(get("/buyers/3/order-defaults")
+		this.mockMvc.perform(get("/api/buyers/3/order-defaults")
 						.header(HttpHeaders.AUTHORIZATION, AUTH_HEADER))
 				.andExpect(status().isNoContent());
 	}

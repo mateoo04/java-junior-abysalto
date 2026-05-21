@@ -2,7 +2,7 @@ import { request } from './client'
 import type { CreateMenuItemRequest, MenuItemResponse } from '../types/menu'
 
 export function listMenuItems(): Promise<MenuItemResponse[]> {
-  return request<MenuItemResponse[]>('/menu-items')
+  return request<MenuItemResponse[]>('/api/menu-items')
 }
 
 export function searchMenuItems(name: string): Promise<MenuItemResponse[]> {
@@ -11,9 +11,9 @@ export function searchMenuItems(name: string): Promise<MenuItemResponse[]> {
     return Promise.resolve([])
   }
   const query = new URLSearchParams({ name: trimmed })
-  return request<MenuItemResponse[]>(`/menu-items/search?${query}`)
+  return request<MenuItemResponse[]>(`/api/menu-items/search?${query}`)
 }
 
 export function createMenuItem(body: CreateMenuItemRequest): Promise<MenuItemResponse> {
-  return request<MenuItemResponse>('/menu-items', { method: 'POST', body })
+  return request<MenuItemResponse>('/api/menu-items', { method: 'POST', body })
 }

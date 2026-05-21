@@ -11,11 +11,11 @@ export function searchBuyers(
   if (first) params.set('firstName', first)
   if (last) params.set('lastName', last)
   const query = params.toString()
-  return request<BuyerResponse[]>(`/buyers/search${query ? `?${query}` : ''}`)
+  return request<BuyerResponse[]>(`/api/buyers/search${query ? `?${query}` : ''}`)
 }
 
 export function getBuyerOrderDefaults(
   buyerId: number,
 ): Promise<BuyerOrderDefaultsResponse | undefined> {
-  return request<BuyerOrderDefaultsResponse | undefined>(`/buyers/${buyerId}/order-defaults`)
+  return request<BuyerOrderDefaultsResponse | undefined>(`/api/buyers/${buyerId}/order-defaults`)
 }

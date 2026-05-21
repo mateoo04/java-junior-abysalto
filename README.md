@@ -109,34 +109,34 @@ npm run build
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `GET` | `/orders` | List orders |
-| `GET` | `/orders?sort=totalPrice` | List orders by total price ascending |
-| `GET` | `/orders?sort=-totalPrice` | List orders by total price descending |
-| `GET` | `/orders/{orderNr}` | Get one order |
-| `POST` | `/orders` | Create order |
-| `PATCH` | `/orders/{orderNr}/status` | Update order status |
+| `GET` | `/api/orders` | List orders |
+| `GET` | `/api/orders?sort=totalPrice` | List orders by total price ascending |
+| `GET` | `/api/orders?sort=-totalPrice` | List orders by total price descending |
+| `GET` | `/api/orders/{orderNr}` | Get one order |
+| `POST` | `/api/orders` | Create order |
+| `PATCH` | `/api/orders/{orderNr}/status` | Update order status |
 
 ### Buyers
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `GET` | `/buyers/search?firstName={value}&lastName={value}` | Search buyers |
-| `GET` | `/buyers/{buyerId}/order-defaults` | Get defaults from buyer's latest order |
+| `GET` | `/api/buyers/search?firstName={value}&lastName={value}` | Search buyers |
+| `GET` | `/api/buyers/{buyerId}/order-defaults` | Get defaults from buyer's latest order |
 
-If a buyer has no previous orders, `/buyers/{buyerId}/order-defaults` returns `204 No Content`.
+If a buyer has no previous orders, `/api/buyers/{buyerId}/order-defaults` returns `204 No Content`.
 
 ### Menu
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `GET` | `/menu-items` | List active menu items |
-| `GET` | `/menu-items/search?name={value}` | Search menu items |
-| `POST` | `/menu-items` | Create menu item |
+| `GET` | `/api/menu-items` | List active menu items |
+| `GET` | `/api/menu-items/search?name={value}` | Search menu items |
+| `POST` | `/api/menu-items` | Create menu item |
 
 Example:
 
 ```bash
-curl -u user:password http://localhost:8080/orders
+curl -u user:password http://localhost:8080/api/orders
 ```
 
 API errors use a consistent JSON shape with `status`, `error`, `message`, `path`, and `timestamp` fields.
