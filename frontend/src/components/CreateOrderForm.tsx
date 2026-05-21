@@ -10,7 +10,7 @@ import { ErrorBanner } from './ErrorBanner'
 import { OrderMealCart } from './OrderMealCart'
 
 const inputClass =
-  'mt-1 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100'
+  'mt-1 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500'
 
 const initialForm = (): CreateOrderRequest => ({
   buyer: { firstName: '', lastName: '', title: '' },
@@ -157,171 +157,185 @@ export function CreateOrderForm({ onCreated }: CreateOrderFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-semibold text-white">New order</h2>
+          <p className="mt-1 text-sm text-slate-500">Customer, delivery, payment, and meals in one flow.</p>
+        </div>
+        {selectedBuyerId != null && (
+          <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-sm text-emerald-300">
+            Existing customer
+          </span>
+        )}
+      </div>
+
       {error && <ErrorBanner message={error} onDismiss={() => setError(null)} />}
 
-      <section className="space-y-4">
-        <div className="flex flex-wrap items-baseline gap-2">
-          <h2 className="text-lg font-medium text-white">Buyer</h2>
-          {selectedBuyerId != null && (
-            <span className="text-sm text-emerald-400">Using existing customer</span>
-          )}
-        </div>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <label className="block">
-            <span className="text-xs text-slate-500">First name</span>
-            <input
-              type="text"
-              required
-              value={form.buyer.firstName}
-              onChange={(e) => updateBuyer({ firstName: e.target.value })}
-              className={inputClass}
-              autoComplete="off"
-            />
-          </label>
-          <label className="block">
-            <span className="text-xs text-slate-500">Last name</span>
-            <input
-              type="text"
-              required
-              value={form.buyer.lastName}
-              onChange={(e) => updateBuyer({ lastName: e.target.value })}
-              className={inputClass}
-              autoComplete="off"
-            />
-          </label>
-          <label className="block">
-            <span className="text-xs text-slate-500">Title (optional)</span>
-            <input
-              type="text"
-              value={form.buyer.title ?? ''}
-              onChange={(e) => updateBuyer({ title: e.target.value })}
-              className={inputClass}
-            />
-          </label>
-        </div>
-        {searchError && (
-          <p className="text-sm text-red-400" role="alert">
-            {searchError}
-          </p>
-        )}
-        <BuyerSearchSuggestions
-          suggestions={suggestions}
-          loading={loading}
-          hasSearched={hasSearched}
-          onSelect={handleSelectBuyer}
-        />
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-lg font-medium text-white">Delivery & payment</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <label className="block">
-            <span className="text-xs text-slate-500">City</span>
-            <input
-              type="text"
-              required
-              value={form.deliveryAddress.city}
-              onChange={(e) =>
-                setForm((f) => ({
-                  ...f,
-                  deliveryAddress: { ...f.deliveryAddress, city: e.target.value },
-                }))
-              }
-              className={inputClass}
-            />
-          </label>
-          <label className="block">
-            <span className="text-xs text-slate-500">Street</span>
-            <input
-              type="text"
-              required
-              value={form.deliveryAddress.street}
-              onChange={(e) =>
-                setForm((f) => ({
-                  ...f,
-                  deliveryAddress: { ...f.deliveryAddress, street: e.target.value },
-                }))
-              }
-              className={inputClass}
-            />
-          </label>
-          <label className="block">
-            <span className="text-xs text-slate-500">Home number (optional)</span>
-            <input
-              type="text"
-              value={form.deliveryAddress.homeNumber ?? ''}
-              onChange={(e) =>
-                setForm((f) => ({
-                  ...f,
-                  deliveryAddress: { ...f.deliveryAddress, homeNumber: e.target.value },
-                }))
-              }
-              className={inputClass}
-            />
-          </label>
-          <label className="block sm:col-span-2">
-            <span className="text-xs text-slate-500">Contact number</span>
-            <input
-              type="tel"
-              required
-              value={form.contactNumber}
-              onChange={(e) => setForm((f) => ({ ...f, contactNumber: e.target.value }))}
-              className={inputClass}
-            />
-          </label>
-          <div className="flex flex-col gap-4 sm:col-span-2 sm:flex-row">
-            <label className="block min-w-0 flex-1">
-              <span className="text-xs text-slate-500">Payment</span>
-              <select
-                value={form.paymentOption}
-                onChange={(e) =>
-                  setForm((f) => ({
-                    ...f,
-                    paymentOption: e.target.value as PaymentOption,
-                  }))
-                }
-                className={inputClass}
-              >
-                {PAYMENT_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {paymentOptionLabel(opt)}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="block min-w-0 flex-1 sm:max-w-[10rem]">
-              <span className="text-xs text-slate-500">Currency</span>
-              <input
-                type="text"
-                required
-                value={form.currency}
-                onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value }))}
-                className={inputClass}
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_22rem]">
+        <div className="space-y-5">
+          <section className="rounded-lg border border-slate-800 bg-slate-900/45 p-4">
+            <h3 className="text-base font-medium text-white">Buyer</h3>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <label className="block">
+                <span className="text-xs text-slate-500">First name</span>
+                <input
+                  type="text"
+                  required
+                  value={form.buyer.firstName}
+                  onChange={(e) => updateBuyer({ firstName: e.target.value })}
+                  className={inputClass}
+                  autoComplete="off"
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs text-slate-500">Last name</span>
+                <input
+                  type="text"
+                  required
+                  value={form.buyer.lastName}
+                  onChange={(e) => updateBuyer({ lastName: e.target.value })}
+                  className={inputClass}
+                  autoComplete="off"
+                />
+              </label>
+              <label className="block sm:col-span-2">
+                <span className="text-xs text-slate-500">Title (optional)</span>
+                <input
+                  type="text"
+                  value={form.buyer.title ?? ''}
+                  onChange={(e) => updateBuyer({ title: e.target.value })}
+                  className={inputClass}
+                />
+              </label>
+            </div>
+            {searchError && (
+              <p className="mt-3 text-sm text-red-400" role="alert">
+                {searchError}
+              </p>
+            )}
+            <div className="mt-3">
+              <BuyerSearchSuggestions
+                suggestions={suggestions}
+                loading={loading}
+                hasSearched={hasSearched}
+                selectedBuyerId={selectedBuyerId}
+                onSelect={handleSelectBuyer}
               />
-            </label>
-          </div>
-          <label className="block sm:col-span-2">
-            <span className="text-xs text-slate-500">Note (optional)</span>
-            <textarea
-              rows={2}
-              value={form.note ?? ''}
-              onChange={(e) => setForm((f) => ({ ...f, note: e.target.value }))}
-              className={inputClass}
-            />
-          </label>
+            </div>
+          </section>
+
+          <section className="rounded-lg border border-slate-800 bg-slate-900/45 p-4">
+            <h3 className="text-base font-medium text-white">Delivery & payment</h3>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <label className="block">
+                <span className="text-xs text-slate-500">City</span>
+                <input
+                  type="text"
+                  required
+                  value={form.deliveryAddress.city}
+                  onChange={(e) =>
+                    setForm((f) => ({
+                      ...f,
+                      deliveryAddress: { ...f.deliveryAddress, city: e.target.value },
+                    }))
+                  }
+                  className={inputClass}
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs text-slate-500">Street</span>
+                <input
+                  type="text"
+                  required
+                  value={form.deliveryAddress.street}
+                  onChange={(e) =>
+                    setForm((f) => ({
+                      ...f,
+                      deliveryAddress: { ...f.deliveryAddress, street: e.target.value },
+                    }))
+                  }
+                  className={inputClass}
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs text-slate-500">Home number (optional)</span>
+                <input
+                  type="text"
+                  value={form.deliveryAddress.homeNumber ?? ''}
+                  onChange={(e) =>
+                    setForm((f) => ({
+                      ...f,
+                      deliveryAddress: { ...f.deliveryAddress, homeNumber: e.target.value },
+                    }))
+                  }
+                  className={inputClass}
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs text-slate-500">Contact number</span>
+                <input
+                  type="tel"
+                  required
+                  value={form.contactNumber}
+                  onChange={(e) => setForm((f) => ({ ...f, contactNumber: e.target.value }))}
+                  className={inputClass}
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs text-slate-500">Payment</span>
+                <select
+                  value={form.paymentOption}
+                  onChange={(e) =>
+                    setForm((f) => ({
+                      ...f,
+                      paymentOption: e.target.value as PaymentOption,
+                    }))
+                  }
+                  className={inputClass}
+                >
+                  {PAYMENT_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {paymentOptionLabel(opt)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="block">
+                <span className="text-xs text-slate-500">Currency</span>
+                <input
+                  type="text"
+                  required
+                  value={form.currency}
+                  onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value }))}
+                  className={inputClass}
+                />
+              </label>
+              <label className="block sm:col-span-2">
+                <span className="text-xs text-slate-500">Note (optional)</span>
+                <textarea
+                  rows={3}
+                  value={form.note ?? ''}
+                  onChange={(e) => setForm((f) => ({ ...f, note: e.target.value }))}
+                  className={inputClass}
+                />
+              </label>
+            </div>
+          </section>
         </div>
-      </section>
 
-      <OrderMealCart cart={cart} currency={form.currency} onChange={setCart} />
+        <aside className="lg:sticky lg:top-6 lg:self-start">
+          <OrderMealCart cart={cart} currency={form.currency} onChange={setCart} />
 
-      <button
-        type="submit"
-        disabled={submitting}
-        className="rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
-      >
-        {submitting ? 'Creating…' : 'Create order'}
-      </button>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="mt-4 w-full rounded-lg bg-emerald-600 px-6 py-3 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+          >
+            {submitting ? 'Creating…' : 'Create order'}
+          </button>
+        </aside>
+      </div>
     </form>
   )
 }

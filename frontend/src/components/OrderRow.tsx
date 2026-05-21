@@ -33,20 +33,20 @@ export function OrderRow({ order, onUpdated, onError }: OrderRowProps) {
   const addr = order.deliveryAddress
 
   return (
-    <article className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+    <article className="rounded-lg border border-slate-800 bg-slate-900/55 p-4 shadow-sm shadow-black/10">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="font-medium text-white">
+        <div className="min-w-0">
+          <p className="truncate font-medium text-white">
             #{order.orderNr} · {order.buyerName}
           </p>
-          <p className="mt-1 text-sm text-slate-400">{formatDateTime(order.orderTime)}</p>
+          <p className="mt-0.5 text-sm text-slate-400">{formatDateTime(order.orderTime)}</p>
         </div>
-        <p className="text-lg font-semibold text-emerald-400">
+        <p className="shrink-0 text-lg font-semibold text-emerald-400">
           {formatMoney(order.totalPrice, order.currency)}
         </p>
       </div>
 
-      <dl className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
+      <dl className="mt-4 grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.4fr)]">
         <div>
           <dt className="text-slate-500">Payment</dt>
           <dd>{paymentOptionLabel(order.paymentOption)}</dd>
@@ -55,12 +55,12 @@ export function OrderRow({ order, onUpdated, onError }: OrderRowProps) {
           <dt className="text-slate-500">Contact</dt>
           <dd>{order.contactNumber}</dd>
         </div>
-        <div className="sm:col-span-2">
+        <div>
           <dt className="text-slate-500">Delivery</dt>
           <dd>{formatAddress(addr.city, addr.street, addr.homeNumber)}</dd>
         </div>
         {order.note && (
-          <div className="sm:col-span-2">
+          <div className="sm:col-span-2 lg:col-span-3">
             <dt className="text-slate-500">Note</dt>
             <dd>{order.note}</dd>
           </div>
@@ -68,16 +68,24 @@ export function OrderRow({ order, onUpdated, onError }: OrderRowProps) {
       </dl>
 
       {order.items.length > 0 && (
-        <ul className="mt-3 space-y-1 border-t border-slate-800 pt-3 text-sm text-slate-300">
+        <ul className="mt-3 divide-y divide-slate-800 border-t border-slate-800 pt-2 text-sm text-slate-300">
           {order.items.map((item) => (
-            <li key={item.orderItemId}>
-              {item.name} × {item.quantity} — {formatMoney(item.price * item.quantity, order.currency)}
+            <li
+              key={item.orderItemId}
+              className="flex items-center justify-between gap-4 py-1.5"
+            >
+              <span className="min-w-0 truncate">
+                {item.name} × {item.quantity}
+              </span>
+              <span className="shrink-0 text-slate-400">
+                {formatMoney(item.price * item.quantity, order.currency)}
+              </span>
             </li>
           ))}
         </ul>
       )}
 
-      <label className="mt-4 flex flex-wrap items-center gap-2 text-sm">
+      <label className="mt-3 flex flex-wrap items-center gap-2 text-sm">
         <span className="text-slate-500">Status</span>
         <select
           value={status}

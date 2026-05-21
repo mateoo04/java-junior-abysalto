@@ -4,6 +4,7 @@ type BuyerSearchSuggestionsProps = {
   suggestions: BuyerResponse[]
   loading: boolean
   hasSearched: boolean
+  selectedBuyerId?: number | null
   onSelect: (buyer: BuyerResponse) => void
 }
 
@@ -11,6 +12,7 @@ export function BuyerSearchSuggestions({
   suggestions,
   loading,
   hasSearched,
+  selectedBuyerId,
   onSelect,
 }: BuyerSearchSuggestionsProps) {
   if (loading) {
@@ -44,13 +46,20 @@ export function BuyerSearchSuggestions({
           <button
             type="button"
             onClick={() => onSelect(buyer)}
-            className="w-full px-4 py-2.5 text-left text-sm text-slate-200 hover:bg-slate-800 focus:bg-slate-800 focus:outline-none"
+            className="flex w-full items-center justify-between gap-4 px-4 py-2 text-left text-sm text-slate-200 hover:bg-slate-800 focus:bg-slate-800 focus:outline-none"
           >
-            <span className="font-medium text-white">
-              {buyer.firstName} {buyer.lastName}
+            <span className="min-w-0">
+              <span className="font-medium text-white">
+                {buyer.firstName} {buyer.lastName}
+              </span>
+              {buyer.title && (
+                <span className="ml-2 text-slate-500">({buyer.title})</span>
+              )}
             </span>
-            {buyer.title && (
-              <span className="ml-2 text-slate-500">({buyer.title})</span>
+            {buyer.buyerId === selectedBuyerId && (
+              <span className="shrink-0 text-emerald-400" aria-label="Selected customer">
+                ✓
+              </span>
             )}
           </button>
         </li>

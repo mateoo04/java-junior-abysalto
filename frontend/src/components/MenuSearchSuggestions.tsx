@@ -47,7 +47,7 @@ export function MenuSearchSuggestions({
           <button
             type="button"
             onClick={() => onSelect(item)}
-            className="flex w-full items-center justify-between gap-4 px-4 py-2.5 text-left text-sm hover:bg-slate-800 focus:bg-slate-800 focus:outline-none"
+            className="flex w-full items-center justify-between gap-4 px-4 py-2 text-left text-sm hover:bg-slate-800 focus:bg-slate-800 focus:outline-none"
           >
             <span className="font-medium text-white">{item.name}</span>
             <span className="text-slate-400">{formatMoney(item.price, currency)}</span>

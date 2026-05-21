@@ -3,7 +3,7 @@ import { ApiError } from '../api/client'
 import { createMenuItem } from '../api/menuItems'
 
 const inputClass =
-  'mt-1 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100'
+  'mt-1 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500'
 
 type CreateMealFormProps = {
   onCreated: () => void
@@ -43,7 +43,7 @@ export function CreateMealForm({ onCreated }: CreateMealFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-slate-800 bg-slate-900/40 p-4">
+    <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border border-slate-800 bg-slate-900/40 p-4">
       <h2 className="text-lg font-medium text-white">Add meal</h2>
       {error && <p className="text-sm text-red-400">{error}</p>}
       <div className="grid gap-4 sm:grid-cols-2">

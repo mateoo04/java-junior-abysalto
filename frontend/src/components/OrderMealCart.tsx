@@ -52,8 +52,10 @@ export function OrderMealCart({ cart, currency, onChange }: OrderMealCartProps) 
   const cartTotal = cart.reduce((sum, line) => sum + line.price * line.quantity, 0)
 
   return (
-    <section className="space-y-4">
-      <h2 className="text-lg font-medium text-white">Meals</h2>
+    <section className="space-y-3 rounded-lg border border-slate-800 bg-slate-900/45 p-4">
+      <div className="flex items-center justify-between gap-3">
+        <h3 className="text-base font-medium text-white">Meals</h3>
+      </div>
 
       <label className="block">
         <span className="text-xs text-slate-500">Search and add meals</span>
@@ -62,7 +64,7 @@ export function OrderMealCart({ cart, currency, onChange }: OrderMealCartProps) 
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Type meal name…"
-          className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100"
+          className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
           autoComplete="off"
         />
       </label>
@@ -82,7 +84,9 @@ export function OrderMealCart({ cart, currency, onChange }: OrderMealCartProps) 
       />
 
       {cart.length === 0 ? (
-        <p className="text-sm text-slate-500">Add at least one meal to the order.</p>
+        <p className="rounded-lg border border-dashed border-slate-800 px-3 py-6 text-center text-sm text-slate-500">
+          Add at least one meal to the order.
+        </p>
       ) : (
         <div className="overflow-hidden rounded-lg border border-slate-800">
           <table className="w-full text-left text-sm">
@@ -111,7 +115,7 @@ export function OrderMealCart({ cart, currency, onChange }: OrderMealCartProps) 
                       onChange={(e) =>
                         updateQuantity(line.menuItemId, Number(e.target.value))
                       }
-                      className="w-16 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-sm"
+                      className="w-16 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
                     />
                   </td>
                   <td className="px-4 py-3 text-right text-slate-200">
