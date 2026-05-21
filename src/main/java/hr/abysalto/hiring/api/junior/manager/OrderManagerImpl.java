@@ -1,11 +1,9 @@
 package hr.abysalto.hiring.api.junior.manager;
 
-import hr.abysalto.hiring.api.junior.dto.AddressResponse;
 import hr.abysalto.hiring.api.junior.dto.CreateAddressRequest;
 import hr.abysalto.hiring.api.junior.dto.CreateBuyerRequest;
 import hr.abysalto.hiring.api.junior.dto.CreateOrderItemRequest;
 import hr.abysalto.hiring.api.junior.dto.CreateOrderRequest;
-import hr.abysalto.hiring.api.junior.dto.OrderItemResponse;
 import hr.abysalto.hiring.api.junior.dto.OrderResponse;
 import hr.abysalto.hiring.api.junior.dto.UpdateOrderStatusRequest;
 import hr.abysalto.hiring.api.junior.model.Buyer;
@@ -35,21 +33,23 @@ public class OrderManagerImpl implements OrderManager {
 	private final BuyerRepository buyerRepository;
 	private final BuyerAddressRepository buyerAddressRepository;
 	private final MenuItemRepository menuItemRepository;
+	private final OrderResponseMapper orderResponseMapper;
 
 	public OrderManagerImpl(OrderRepository orderRepository, OrderItemRepository orderItemRepository,
 			BuyerRepository buyerRepository, BuyerAddressRepository buyerAddressRepository,
-			MenuItemRepository menuItemRepository) {
+			MenuItemRepository menuItemRepository, OrderResponseMapper orderResponseMapper) {
 		this.orderRepository = orderRepository;
 		this.orderItemRepository = orderItemRepository;
 		this.buyerRepository = buyerRepository;
 		this.buyerAddressRepository = buyerAddressRepository;
 		this.menuItemRepository = menuItemRepository;
+		this.orderResponseMapper = orderResponseMapper;
 	}
 
 	@Override
 	public List<OrderResponse> getAllOrders(String sort) {
 		return getOrders(sort).stream()
-				.map(this::toResponse)
+				.map(this.orderResponseMapper::toResponse)
 				.toList();
 	}
 
@@ -57,7 +57,7 @@ public class OrderManagerImpl implements OrderManager {
 	public OrderResponse getByOrderNr(Long orderNr) {
 		Order order = this.orderRepository.findOrderByOrderNr(orderNr)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
-		return toResponse(order);
+		return this.orderResponseMapper.toResponse(order);
 	}
 
 	@Override
@@ -167,54 +167,6 @@ public class OrderManagerImpl implements OrderManager {
 			item.setMenuItemId(line.menuItemId());
 			this.orderItemRepository.save(item);
 		}
-	}
-
-	private OrderResponse toResponse(Order order) {
-		Buyer buyer = this.buyerRepository.findById(order.getBuyerId())
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Buyer not found"));
-		BuyerAddress address = this.buyerAddressRepository.findById(order.getDeliveryAddressId())
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Delivery address not found"));
-		List<OrderItemResponse> items = this.orderItemRepository.findByOrderNr(order.getOrderNr()).stream()
-				.map(this::toResponse)
-				.toList();
-
-		return new OrderResponse(
-				order.getOrderNr(),
-				buyer.getBuyerId(),
-				formatBuyerName(buyer),
-				order.getOrderStatus(),
-				order.getOrderTime(),
-				order.getPaymentOption(),
-				toResponse(address),
-				order.getContactNumber(),
-				order.getNote(),
-				items,
-				order.getCurrency(),
-				order.getTotalPrice());
-	}
-
-	private OrderItemResponse toResponse(OrderItem item) {
-		return new OrderItemResponse(
-				item.getOrderItemId(),
-				item.getItemNr(),
-				item.getName(),
-				item.getQuantity(),
-				item.getPrice());
-	}
-
-	private AddressResponse toResponse(BuyerAddress address) {
-		return new AddressResponse(
-				address.getBuyerAddressId(),
-				address.getCity(),
-				address.getStreet(),
-				address.getHomeNumber());
-	}
-
-	private String formatBuyerName(Buyer buyer) {
-		if (buyer.getTitle() == null || buyer.getTitle().isBlank()) {
-			return buyer.getFirstName() + " " + buyer.getLastName();
-		}
-		return buyer.getTitle() + " " + buyer.getFirstName() + " " + buyer.getLastName();
 	}
 
 	private String normalizeCurrency(String currency) {
