@@ -42,6 +42,13 @@ export interface BuyerResponse {
   title: string | null
 }
 
+export interface BuyerOrderDefaultsResponse {
+  contactNumber: string | null
+  paymentOption: PaymentOption
+  currency: string
+  deliveryAddress: AddressResponse
+}
+
 export interface CreateBuyerRequest {
   firstName: string
   lastName: string

@@ -1,5 +1,5 @@
 import { request } from './client'
-import type { BuyerResponse } from '../types/order'
+import type { BuyerOrderDefaultsResponse, BuyerResponse } from '../types/order'
 
 export function searchBuyers(
   firstName: string,
@@ -12,4 +12,10 @@ export function searchBuyers(
   if (last) params.set('lastName', last)
   const query = params.toString()
   return request<BuyerResponse[]>(`/buyers/search${query ? `?${query}` : ''}`)
+}
+
+export function getBuyerOrderDefaults(
+  buyerId: number,
+): Promise<BuyerOrderDefaultsResponse | undefined> {
+  return request<BuyerOrderDefaultsResponse | undefined>(`/buyers/${buyerId}/order-defaults`)
 }

@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { getBuyerOrderDefaults } from '../api/buyers'
 import { ApiError } from '../api/client'
 import { createOrder } from '../api/orders'
 import { useBuyerSearch } from '../hooks/useBuyerSearch'
@@ -69,7 +70,7 @@ export function CreateOrderForm({ onCreated }: CreateOrderFormProps) {
     setForm((f) => ({ ...f, buyer: nextBuyer }))
   }
 
-  function handleSelectBuyer(buyer: BuyerResponse) {
+  async function handleSelectBuyer(buyer: BuyerResponse) {
     const snapshot: BuyerSnapshot = {
       firstName: buyer.firstName,
       lastName: buyer.lastName,
@@ -85,6 +86,27 @@ export function CreateOrderForm({ onCreated }: CreateOrderFormProps) {
         ...(buyer.title ? { title: buyer.title } : {}),
       },
     }))
+
+    try {
+      const defaults = await getBuyerOrderDefaults(buyer.buyerId)
+      if (!defaults) return
+
+      setForm((f) => ({
+        ...f,
+        contactNumber: defaults.contactNumber ?? '',
+        paymentOption: defaults.paymentOption,
+        currency: defaults.currency,
+        deliveryAddress: {
+          city: defaults.deliveryAddress.city,
+          street: defaults.deliveryAddress.street,
+          ...(defaults.deliveryAddress.homeNumber
+            ? { homeNumber: defaults.deliveryAddress.homeNumber }
+            : {}),
+        },
+      }))
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to load customer defaults')
+    }
   }
 
   function resetForm() {

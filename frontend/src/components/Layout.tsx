@@ -12,15 +12,15 @@ export function Layout({ view, onViewChange, children }: LayoutProps) {
   return (
     <div className="min-h-svh bg-slate-950 text-slate-100">
       <header className="border-b border-slate-800">
-        <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-4 py-4">
+        <div className="mx-auto flex max-w-4xl flex-col items-center gap-3 px-4 py-4 sm:flex-row sm:justify-between sm:gap-4">
           <button
             type="button"
             onClick={() => onViewChange('list')}
-            className="text-left text-xl font-semibold tracking-tight text-white transition-colors hover:text-emerald-300"
+            className="text-center text-xl font-semibold tracking-tight text-white transition-colors hover:text-emerald-300 sm:text-left"
           >
             Restaurant orders
           </button>
-          <nav className="flex gap-2">
+          <nav className="flex w-full justify-center gap-2 sm:w-auto sm:justify-start">
             <NavButton active={view === 'list'} onClick={() => onViewChange('list')}>
               Orders
             </NavButton>

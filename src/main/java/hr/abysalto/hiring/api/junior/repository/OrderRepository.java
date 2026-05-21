@@ -23,4 +23,7 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
 
 	@Query("SELECT * FROM orders WHERE order_nr = :orderNr")
 	Optional<Order> findOrderByOrderNr(@Param("orderNr") Long orderNr);
+
+	@Query("SELECT * FROM orders WHERE buyer_id = :buyerId ORDER BY order_time DESC LIMIT 1")
+	Optional<Order> findLatestByBuyerId(@Param("buyerId") Long buyerId);
 }

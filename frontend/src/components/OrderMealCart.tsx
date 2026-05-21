@@ -12,6 +12,7 @@ type OrderMealCartProps = {
 
 export function OrderMealCart({ cart, currency, onChange }: OrderMealCartProps) {
   const [search, setSearch] = useState('')
+  const [quantityDrafts, setQuantityDrafts] = useState<Record<number, string>>({})
   const { suggestions, loading, error, hasSearched } = useMenuSearch(search)
 
   function addMeal(meal: MenuItemResponse) {
@@ -43,6 +44,23 @@ export function OrderMealCart({ cart, currency, onChange }: OrderMealCartProps) 
     onChange(
       cart.map((line) => (line.menuItemId === menuItemId ? { ...line, quantity } : line)),
     )
+  }
+
+  function handleQuantityChange(menuItemId: number, value: string) {
+    setQuantityDrafts((drafts) => ({ ...drafts, [menuItemId]: value }))
+    if (value === '') return
+
+    const quantity = Number(value)
+    if (Number.isInteger(quantity) && quantity > 0) {
+      updateQuantity(menuItemId, quantity)
+    }
+  }
+
+  function commitQuantity(menuItemId: number) {
+    setQuantityDrafts((drafts) => {
+      const { [menuItemId]: _removed, ...rest } = drafts
+      return rest
+    })
   }
 
   function removeLine(menuItemId: number) {
@@ -92,42 +110,57 @@ export function OrderMealCart({ cart, currency, onChange }: OrderMealCartProps) 
           <table className="w-full text-left text-sm">
             <thead className="bg-slate-900/80 text-xs text-slate-500">
               <tr>
-                <th className="px-4 py-2 font-medium">Meal</th>
-                <th className="px-4 py-2 font-medium">Qty</th>
-                <th className="px-4 py-2 font-medium text-right">Line total</th>
-                <th className="px-4 py-2" />
+                <th className="px-3 py-2 font-medium">Meal</th>
+                <th className="w-24 px-2 py-2 font-medium">Quantity</th>
+                <th className="w-24 px-2 py-2 font-medium text-right">Total</th>
+                <th className="w-10 px-2 py-2" />
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">
               {cart.map((line) => (
                 <tr key={line.menuItemId} className="bg-slate-900/40">
-                  <td className="px-4 py-3">
+                  <td className="min-w-0 px-3 py-3">
                     <span className="text-white">{line.name}</span>
                     <span className="mt-0.5 block text-xs text-slate-500">
                       {formatMoney(line.price, currency)} each
                     </span>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-2 py-3">
                     <input
                       type="number"
                       min={1}
-                      value={line.quantity}
-                      onChange={(e) =>
-                        updateQuantity(line.menuItemId, Number(e.target.value))
-                      }
+                      value={quantityDrafts[line.menuItemId] ?? line.quantity}
+                      onBlur={() => commitQuantity(line.menuItemId)}
+                      onChange={(e) => handleQuantityChange(line.menuItemId, e.target.value)}
                       className="w-16 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
                     />
                   </td>
-                  <td className="px-4 py-3 text-right text-slate-200">
+                  <td className="px-2 py-3 text-right text-slate-200">
                     {formatMoney(line.price * line.quantity, currency)}
                   </td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-2 py-3 text-right">
                     <button
                       type="button"
                       onClick={() => removeLine(line.menuItemId)}
-                      className="text-sm text-red-400 hover:text-red-300"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-red-400 transition-colors hover:bg-red-500/10 hover:text-red-300"
+                      aria-label={`Remove ${line.name}`}
                     >
-                      Remove
+                      <svg
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                      >
+                        <path d="M3 6h18" />
+                        <path d="M8 6V4h8v2" />
+                        <path d="M19 6l-1 14H6L5 6" />
+                        <path d="M10 11v5" />
+                        <path d="M14 11v5" />
+                      </svg>
                     </button>
                   </td>
                 </tr>
@@ -135,13 +168,12 @@ export function OrderMealCart({ cart, currency, onChange }: OrderMealCartProps) 
             </tbody>
             <tfoot className="border-t border-slate-800 bg-slate-900/60">
               <tr>
-                <td colSpan={2} className="px-4 py-3 font-medium text-slate-300">
+                <td colSpan={2} className="px-3 py-3 font-medium text-slate-300">
                   Cart total
                 </td>
-                <td className="px-4 py-3 text-right font-semibold text-emerald-400">
+                <td colSpan={2} className="px-3 py-3 text-right font-semibold text-emerald-400">
                   {formatMoney(cartTotal, currency)}
                 </td>
-                <td />
               </tr>
             </tfoot>
           </table>
