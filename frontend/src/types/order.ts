@@ -54,11 +54,7 @@ export interface CreateAddressRequest {
   homeNumber?: string
 }
 
-export interface CreateOrderItemRequest {
-  name: string
-  quantity: number
-  price: number
-}
+import type { CreateOrderLineRequest } from './menu'
 
 export interface CreateOrderRequest {
   buyerId?: number
@@ -68,7 +64,7 @@ export interface CreateOrderRequest {
   contactNumber: string
   note?: string
   currency: string
-  items: CreateOrderItemRequest[]
+  items: CreateOrderLineRequest[]
 }
 
 export interface UpdateOrderStatusRequest {

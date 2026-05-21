@@ -7,8 +7,8 @@ type OrderSortControlsProps = {
 
 const options: { value: OrderSort; label: string }[] = [
   { value: 'default', label: 'Newest first' },
-  { value: 'totalPrice', label: 'Price: low → high' },
-  { value: '-totalPrice', label: 'Price: high → low' },
+  { value: 'totalPrice', label: 'Price: low to high' },
+  { value: '-totalPrice', label: 'Price: high to low' },
 ]
 
 export function OrderSortControls({ sort, onSortChange }: OrderSortControlsProps) {

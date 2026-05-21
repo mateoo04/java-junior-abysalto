@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-export type AppView = 'list' | 'create'
+export type AppView = 'list' | 'create' | 'meals'
 
 type LayoutProps = {
   view: AppView
@@ -20,6 +20,9 @@ export function Layout({ view, onViewChange, children }: LayoutProps) {
             </NavButton>
             <NavButton active={view === 'create'} onClick={() => onViewChange('create')}>
               New order
+            </NavButton>
+            <NavButton active={view === 'meals'} onClick={() => onViewChange('meals')}>
+              Meals
             </NavButton>
           </nav>
         </div>

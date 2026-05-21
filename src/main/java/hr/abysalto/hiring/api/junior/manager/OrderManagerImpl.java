@@ -10,11 +10,13 @@ import hr.abysalto.hiring.api.junior.dto.OrderResponse;
 import hr.abysalto.hiring.api.junior.dto.UpdateOrderStatusRequest;
 import hr.abysalto.hiring.api.junior.model.Buyer;
 import hr.abysalto.hiring.api.junior.model.BuyerAddress;
+import hr.abysalto.hiring.api.junior.model.MenuItem;
 import hr.abysalto.hiring.api.junior.model.Order;
 import hr.abysalto.hiring.api.junior.model.OrderItem;
 import hr.abysalto.hiring.api.junior.model.OrderStatus;
 import hr.abysalto.hiring.api.junior.repository.BuyerAddressRepository;
 import hr.abysalto.hiring.api.junior.repository.BuyerRepository;
+import hr.abysalto.hiring.api.junior.repository.MenuItemRepository;
 import hr.abysalto.hiring.api.junior.repository.OrderItemRepository;
 import hr.abysalto.hiring.api.junior.repository.OrderRepository;
 import org.springframework.http.HttpStatus;
@@ -32,13 +34,16 @@ public class OrderManagerImpl implements OrderManager {
 	private final OrderItemRepository orderItemRepository;
 	private final BuyerRepository buyerRepository;
 	private final BuyerAddressRepository buyerAddressRepository;
+	private final MenuItemRepository menuItemRepository;
 
 	public OrderManagerImpl(OrderRepository orderRepository, OrderItemRepository orderItemRepository,
-			BuyerRepository buyerRepository, BuyerAddressRepository buyerAddressRepository) {
+			BuyerRepository buyerRepository, BuyerAddressRepository buyerAddressRepository,
+			MenuItemRepository menuItemRepository) {
 		this.orderRepository = orderRepository;
 		this.orderItemRepository = orderItemRepository;
 		this.buyerRepository = buyerRepository;
 		this.buyerAddressRepository = buyerAddressRepository;
+		this.menuItemRepository = menuItemRepository;
 	}
 
 	@Override
@@ -60,7 +65,8 @@ public class OrderManagerImpl implements OrderManager {
 	public OrderResponse create(CreateOrderRequest request) {
 		Buyer buyer = resolveBuyer(request);
 		BuyerAddress deliveryAddress = saveAddress(request.deliveryAddress());
-		BigDecimal totalPrice = calculateTotalPrice(request.items());
+		List<ResolvedOrderLine> lines = resolveOrderLines(request.items());
+		BigDecimal totalPrice = calculateTotalPrice(lines);
 
 		Order order = new Order();
 		order.setBuyerId(buyer.getBuyerId());
@@ -74,7 +80,7 @@ public class OrderManagerImpl implements OrderManager {
 		order.setTotalPrice(totalPrice);
 
 		Order savedOrder = this.orderRepository.save(order);
-		saveItems(savedOrder.getOrderNr(), request.items());
+		saveItems(savedOrder.getOrderNr(), lines);
 
 		return getByOrderNr(savedOrder.getOrderNr());
 	}
@@ -124,21 +130,41 @@ public class OrderManagerImpl implements OrderManager {
 		return this.buyerAddressRepository.save(address);
 	}
 
-	private BigDecimal calculateTotalPrice(List<CreateOrderItemRequest> items) {
+	private List<ResolvedOrderLine> resolveOrderLines(List<CreateOrderItemRequest> items) {
 		return items.stream()
-				.map(item -> item.price().multiply(BigDecimal.valueOf(item.quantity())))
+				.map(this::resolveOrderLine)
+				.toList();
+	}
+
+	private ResolvedOrderLine resolveOrderLine(CreateOrderItemRequest request) {
+		MenuItem menuItem = this.menuItemRepository.findById(request.menuItemId())
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Menu item not found"));
+		if (!Boolean.TRUE.equals(menuItem.getActive())) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Menu item is not available: " + menuItem.getName());
+		}
+		return new ResolvedOrderLine(
+				menuItem.getMenuItemId(),
+				menuItem.getName(),
+				request.quantity(),
+				menuItem.getPrice());
+	}
+
+	private BigDecimal calculateTotalPrice(List<ResolvedOrderLine> lines) {
+		return lines.stream()
+				.map(line -> line.price().multiply(BigDecimal.valueOf(line.quantity())))
 				.reduce(BigDecimal.ZERO, BigDecimal::add);
 	}
 
-	private void saveItems(Long orderNr, List<CreateOrderItemRequest> items) {
+	private void saveItems(Long orderNr, List<ResolvedOrderLine> lines) {
 		short itemNr = 1;
-		for (CreateOrderItemRequest request : items) {
+		for (ResolvedOrderLine line : lines) {
 			OrderItem item = new OrderItem();
 			item.setOrderId(orderNr);
 			item.setItemNr(itemNr++);
-			item.setName(request.name());
-			item.setQuantity(request.quantity());
-			item.setPrice(request.price());
+			item.setName(line.name());
+			item.setQuantity(line.quantity());
+			item.setPrice(line.price());
+			item.setMenuItemId(line.menuItemId());
 			this.orderItemRepository.save(item);
 		}
 	}

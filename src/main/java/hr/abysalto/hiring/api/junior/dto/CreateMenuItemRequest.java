@@ -1,13 +1,16 @@
 package hr.abysalto.hiring.api.junior.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-public record CreateOrderItemRequest(
-		@NotNull
-		Long menuItemId,
+import java.math.BigDecimal;
+
+public record CreateMenuItemRequest(
+		@NotBlank
+		String name,
 		@NotNull
 		@Positive
-		Short quantity
+		BigDecimal price
 ) {
 }

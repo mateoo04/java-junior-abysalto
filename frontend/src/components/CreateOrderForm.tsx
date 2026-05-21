@@ -3,10 +3,11 @@ import { ApiError } from '../api/client'
 import { createOrder } from '../api/orders'
 import { useBuyerSearch } from '../hooks/useBuyerSearch'
 import { PAYMENT_OPTIONS, paymentOptionLabel } from '../lib/labels'
+import type { CartLine } from '../types/menu'
 import type { BuyerResponse, CreateOrderRequest, PaymentOption } from '../types/order'
 import { BuyerSearchSuggestions } from './BuyerSearchSuggestions'
 import { ErrorBanner } from './ErrorBanner'
-import { OrderItemFields } from './OrderItemFields'
+import { OrderMealCart } from './OrderMealCart'
 
 const inputClass =
   'mt-1 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100'
@@ -18,7 +19,7 @@ const initialForm = (): CreateOrderRequest => ({
   contactNumber: '',
   note: '',
   currency: 'EUR',
-  items: [{ name: '', quantity: 1, price: 0 }],
+  items: [],
 })
 
 type BuyerSnapshot = {
@@ -45,6 +46,7 @@ type CreateOrderFormProps = {
 
 export function CreateOrderForm({ onCreated }: CreateOrderFormProps) {
   const [form, setForm] = useState<CreateOrderRequest>(initialForm)
+  const [cart, setCart] = useState<CartLine[]>([])
   const [selectedBuyerId, setSelectedBuyerId] = useState<number | null>(null)
   const [selectedSnapshot, setSelectedSnapshot] = useState<BuyerSnapshot | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -87,6 +89,7 @@ export function CreateOrderForm({ onCreated }: CreateOrderFormProps) {
 
   function resetForm() {
     setForm(initialForm())
+    setCart([])
     setSelectedBuyerId(null)
     setSelectedSnapshot(null)
   }
@@ -100,11 +103,9 @@ export function CreateOrderForm({ onCreated }: CreateOrderFormProps) {
     }
     if (!form.contactNumber.trim()) return 'Contact number is required'
     if (!form.currency.trim()) return 'Currency is required'
-    if (form.items.length === 0) return 'At least one item is required'
-    for (const item of form.items) {
-      if (!item.name.trim()) return 'Each item needs a name'
-      if (!item.quantity || item.quantity <= 0) return 'Each item needs quantity greater than zero'
-      if (!item.price || item.price <= 0) return 'Each item needs price greater than zero'
+    if (cart.length === 0) return 'Add at least one meal to the order'
+    for (const line of cart) {
+      if (!line.quantity || line.quantity <= 0) return 'Each meal needs quantity greater than zero'
     }
     return null
   }
@@ -138,10 +139,9 @@ export function CreateOrderForm({ onCreated }: CreateOrderFormProps) {
       contactNumber: form.contactNumber.trim(),
       currency: form.currency.trim(),
       ...(form.note?.trim() ? { note: form.note.trim() } : {}),
-      items: form.items.map((item) => ({
-        name: item.name.trim(),
-        quantity: item.quantity,
-        price: item.price,
+      items: cart.map((line) => ({
+        menuItemId: line.menuItemId,
+        quantity: line.quantity,
       })),
     }
 
@@ -313,7 +313,7 @@ export function CreateOrderForm({ onCreated }: CreateOrderFormProps) {
         </div>
       </section>
 
-      <OrderItemFields items={form.items} onChange={(items) => setForm((f) => ({ ...f, items }))} />
+      <OrderMealCart cart={cart} currency={form.currency} onChange={setCart} />
 
       <button
         type="submit"

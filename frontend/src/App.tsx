@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { CreateOrderForm } from './components/CreateOrderForm'
 import { Layout, type AppView } from './components/Layout'
+import { MealsPage } from './components/MealsPage'
 import { OrderList } from './components/OrderList'
 
 function App() {
@@ -14,11 +15,9 @@ function App() {
 
   return (
     <Layout view={view} onViewChange={setView}>
-      {view === 'list' ? (
-        <OrderList key={listKey} />
-      ) : (
-        <CreateOrderForm onCreated={handleCreated} />
-      )}
+      {view === 'list' && <OrderList key={listKey} />}
+      {view === 'create' && <CreateOrderForm onCreated={handleCreated} />}
+      {view === 'meals' && <MealsPage />}
     </Layout>
   )
 }

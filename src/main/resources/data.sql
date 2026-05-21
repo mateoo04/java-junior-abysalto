@@ -8,6 +8,12 @@ INSERT INTO buyer_address (city, street, home_number) VALUES ('Zagreb', 'Ilica',
 INSERT INTO buyer_address (city, street, home_number) VALUES ('Zagreb', 'Slavonska avenija', '56');
 INSERT INTO buyer_address (city, street, home_number) VALUES ('Zagreb', 'Prisavlje', '8');
 
+INSERT INTO menu_item (name, price, active) VALUES ('Rižoto s piletinom', 11.20, TRUE);
+INSERT INTO menu_item (name, price, active) VALUES ('Sezonska salata', 4.00, TRUE);
+INSERT INTO menu_item (name, price, active) VALUES ('Pureći medaljoni s njokima', 16.90, TRUE);
+INSERT INTO menu_item (name, price, active) VALUES ('Juha od rajčice', 3.50, TRUE);
+INSERT INTO menu_item (name, price, active) VALUES ('Cijeđena naranča', 3.00, TRUE);
+
 INSERT INTO orders (
 	buyer_id,
 	order_status,
@@ -52,8 +58,8 @@ INSERT INTO orders (
 	23.40
 );
 
-INSERT INTO order_item (order_nr, item_nr, name, quantity, price) VALUES (1, 1, 'Rižoto s piletinom', 1, 11.20);
-INSERT INTO order_item (order_nr, item_nr, name, quantity, price) VALUES (1, 2, 'Sezonska salata', 1, 4.00);
-INSERT INTO order_item (order_nr, item_nr, name, quantity, price) VALUES (2, 1, 'Pureći medaljoni s njokima', 1, 16.90);
-INSERT INTO order_item (order_nr, item_nr, name, quantity, price) VALUES (2, 2, 'Juha od rajčice', 1, 3.50);
-INSERT INTO order_item (order_nr, item_nr, name, quantity, price) VALUES (2, 3, 'Cijeđena naranča', 1, 3.00);
+INSERT INTO order_item (order_nr, item_nr, name, quantity, price, menu_item_id) VALUES (1, 1, 'Rižoto s piletinom', 1, 11.20, 1);
+INSERT INTO order_item (order_nr, item_nr, name, quantity, price, menu_item_id) VALUES (1, 2, 'Sezonska salata', 1, 4.00, 2);
+INSERT INTO order_item (order_nr, item_nr, name, quantity, price, menu_item_id) VALUES (2, 1, 'Pureći medaljoni s njokima', 1, 16.90, 3);
+INSERT INTO order_item (order_nr, item_nr, name, quantity, price, menu_item_id) VALUES (2, 2, 'Juha od rajčice', 1, 3.50, 4);
+INSERT INTO order_item (order_nr, item_nr, name, quantity, price, menu_item_id) VALUES (2, 3, 'Cijeđena naranča', 1, 3.00, 5);
