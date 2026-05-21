@@ -18,6 +18,6 @@ public class OrderItem {
 	private String name;
 	private Short quantity;
 	private BigDecimal price;
-	@Column("menu_item_id")
+	@Column("MENU_ITEM_ID")
 	private Long menuItemId;
 }
